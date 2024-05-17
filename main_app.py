@@ -112,6 +112,10 @@ def main():
             st.write(filtered_df)
 
             plot_data(filtered_df)
+    st.sidebar.image("Nestle_Signature.png")
+    st.sidebar.write("""<p style='font-size: 14px;'>This Web-App is designed to facilitate monitoring of Maggi Mixing Cycle Count Report""")
+    st.sidebar.write("""<p style='font-size: 13px;'>For any inquiries, error handling, or assistance, please feel free to reach us through Email: <br>
+        <a href="mailto:Ananda.Cahyo@id.nestle.com">Ananda.Cahyo@id.nestle.com <br></p>""", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
