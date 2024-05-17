@@ -6,9 +6,8 @@ import numpy as np
 import math
 from PIL import Image
 
-st.set_page_config(layout="wide")
 img = Image.open('Nestle_Logo.png')
-st.set_page_config(page_title="DMO-P Validation Tool", page_icon=img,layout="wide")
+st.set_page_config(page_title="Maggi Cycle Count", page_icon=img,layout="wide")
 
 def seconds_to_time(seconds):
     try:
