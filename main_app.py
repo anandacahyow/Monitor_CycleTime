@@ -60,9 +60,9 @@ def filtered_data(df, avg_data):
                 avg = sum(shift_data) / len(shift_data)
                 averages.extend([avg] * len(shift_data))
             current_shift = row['RECORD_Shift']
-            shift_data = [row['Cycle Time_ID 1']]
+            shift_data = [row[avg_data]]
         else:
-            shift_data.append(row['Cycle Time_ID 1'])
+            shift_data.append(row[avg_data])
 
     # Calculate average for the last shift
     if shift_data:
