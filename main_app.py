@@ -69,19 +69,36 @@ def plot_data(df):
 
     # Calculate and plot average lines for each shift
     shifts = df['RECORD_Shift'].unique()
-    for shift in shifts:
-        shift_df = df[df['RECORD_Shift'] == shift]
-        shift_average = shift_df.groupby(shift_df['Datetime'].dt.hour)['Cycle Time_Total Batch'].mean().fillna(0)
-        for hour, avg_value in shift_average.items():
-            fig.add_shape(
-                type='line',
-                x0=hour,
-                y0=avg_value,
-                x1=hour + 1,
-                y1=avg_value,
-                line=dict(color='firebrick', width=2, dash='dash'),
-                name=f'Average {shift}'
+    shift_avg_values = [0] * len(df)
+    prev_shift = None
+    for i, (shift, _) in enumerate(df['RECORD_Shift'].iteritems()):
+        if shift != prev_shift:  # Shift change encountered
+            if prev_shift is not None:
+                shift_avg = np.mean(shift_avg_values[:i]) if i > 0 else 0
+                fig.add_trace(
+                    go.Scatter(
+                        x=df['Datetime'].iloc[i-1:i+1],
+                        y=[shift_avg] * 2,
+                        mode='lines',
+                        name=f'Average {prev_shift}',
+                        line=dict(color='firebrick', width=2, dash='dash')
+                    )
+                )
+            prev_shift = shift
+        shift_avg_values[i] = df.loc[shift, 'Cycle Time_Total Batch']
+    
+    # Plot the average line for the last shift
+    if prev_shift is not None:
+        shift_avg = np.mean(shift_avg_values)
+        fig.add_trace(
+            go.Scatter(
+                x=[df['Datetime'].iloc[-1]],
+                y=[shift_avg],
+                mode='markers',
+                name=f'Average {prev_shift}',
+                marker=dict(color='firebrick', size=10, symbol='triangle-up')
             )
+        )
 
     for trace in fig.data:
         trace.text = [seconds_to_time(y) for y in trace.y]
@@ -91,11 +108,12 @@ def plot_data(df):
                     yaxis_title='Cumulative Cycle Time',
                     hovermode='x',
                     template='plotly_dark',
-                    width = 1250,
-                    height = 800)
-    #fig.update_traces(mode='markers')
+                    width=1250,
+                    height=800)
+    # fig.update_traces(mode='markers')
 
     st.plotly_chart(fig)
+
 
 
 
