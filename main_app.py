@@ -101,9 +101,7 @@ def plot_data(df):
                 x=df['Datetime'],
                 y=df['Average'],
                 mode='lines',
-                name=f'Cycle Time {i}',
-                stackgroup='one',
-                hovertemplate='Datetime: %{x}<br>Duration: %{text}'
+                name=f'Average Line'
             )
         )
 
@@ -114,7 +112,7 @@ def plot_data(df):
                     template='plotly_dark',
                     width = 1250,
                     height = 800)
-    fig.update_traces(mode='markers')
+    #fig.update_traces(mode='markers')
 
     st.plotly_chart(fig)
 
