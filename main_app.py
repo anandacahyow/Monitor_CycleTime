@@ -71,7 +71,7 @@ def plot_data(df):
     shifts = df['RECORD_Shift'].unique()
     for shift in shifts:
         shift_df = df[df['RECORD_Shift'] == shift]
-        shift_average = shift_df.groupby(shift_df['Datetime'].dt.hour).mean()['Cycle Time_Total Batch']
+        shift_average = shift_df.groupby(shift_df['Datetime'].dt.hour)['Cycle Time_Total Batch'].mean().fillna(0)
         for hour, avg_value in shift_average.items():
             fig.add_shape(
                 type='line',
