@@ -4,6 +4,10 @@ import plotly.graph_objs as go
 from datetime import datetime, timedelta
 import numpy as np
 import math
+from PIL import Image
+
+img = Image.open('Nestle_Logo.png')
+st.set_page_config(page_title="Maggi Cycle Count", page_icon=img,layout="wide")
 
 def seconds_to_time(seconds):
     try:
@@ -67,50 +71,17 @@ def plot_data(df):
             )
         )
 
-    # Calculate and plot average lines for each shift
-    shifts = df['RECORD_Shift'].unique()
-    shift_avg_values = [0] * len(df)
-    prev_shift = None
-    for i, shift in enumerate(df['RECORD_Shift'].values):
-        if shift != prev_shift:  # Shift change encountered
-            if prev_shift is not None:
-                shift_avg = np.mean(shift_avg_values[:i]) if i > 0 else 0
-                fig.add_trace(
-                    go.Scatter(
-                        x=df['Datetime'].iloc[i-1:i+1],
-                        y=[shift_avg] * 2,
-                        mode='lines',
-                        name=f'Average {prev_shift}',
-                        line=dict(color='firebrick', width=2, dash='dash')
-                    )
-                )
-            prev_shift = shift
-        shift_avg_values[i] = df.loc[df.index[i], 'Cycle Time_Total Batch']
-    
-    # Plot the average line for the last shift
-    if prev_shift is not None:
-        shift_avg = np.mean(shift_avg_values)
-        fig.add_trace(
-            go.Scatter(
-                x=[df['Datetime'].iloc[-1]],
-                y=[shift_avg],
-                mode='markers',
-                name=f'Average {prev_shift}',
-                marker=dict(color='firebrick', size=10, symbol='triangle-up')
-            )
-        )
-
     for trace in fig.data:
         trace.text = [seconds_to_time(y) for y in trace.y]
 
-    fig.update_layout(title='Stacked Line Chart of Cycle Time IDs 1 to 7 with Average Lines',
-                    xaxis_title='Hour of Day',
+    fig.update_layout(title='Stacked Line Chart of Cycle Time IDs 1 to 7',
+                    xaxis_title='Datetime',
                     yaxis_title='Cumulative Cycle Time',
                     hovermode='x',
                     template='plotly_dark',
-                    width=1250,
-                    height=800)
-    # fig.update_traces(mode='markers')
+                    width = 1250,
+                    height = 800)
+    fig.update_traces(mode='markers')
 
     st.plotly_chart(fig)
 
@@ -137,9 +108,20 @@ def main():
 
             filtered_df = df[(df['Datetime'] >= pd.Timestamp(start_date)) & (df['Datetime'] <= pd.Timestamp(end_date))]
 
+            # Shift filter
+            shifts = filtered_df['RECORD_Shift'].unique().tolist()
+            selected_shift = st.sidebar.selectbox("Select Shift", ['All'] + shifts)
+
+            if selected_shift != 'All':
+                filtered_df = filtered_df[filtered_df['RECORD_Shift'] == selected_shift]
+            
+            st.write(filtered_df)
+
             plot_data(filtered_df)
-    st.sidebar.write("""This Web-App is designed to facilitate monitoring of Maggi Mixing Cycle Count Report""")
-    st.sidebar.write("""For any inquiries, error handling, or assistance, please feel free to reach us through Email: Ananda.Cahyo@id.nestle.com""")
+    st.sidebar.image("Nestle_Signature.png")
+    st.sidebar.write("""<p style='font-size: 14px;'>This Web-App is designed to facilitate monitoring of Maggi Mixing Cycle Count Report""")
+    st.sidebar.write("""<p style='font-size: 13px;'>For any inquiries, error handling, or assistance, please feel free to reach us through Email: <br>
+        <a href="mailto:Ananda.Cahyo@id.nestle.com">Ananda.Cahyo@id.nestle.com <br></p>""", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
