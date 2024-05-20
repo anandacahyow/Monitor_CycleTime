@@ -67,26 +67,27 @@ def plot_data(df):
             )
         )
 
-    # Calculate and plot average lines for each RECORD_Shift
+    # Calculate and plot average lines for each shift
     shifts = df['RECORD_Shift'].unique()
     for shift in shifts:
         shift_df = df[df['RECORD_Shift'] == shift]
-        shift_average = shift_df.groupby(shift_df['Datetime'].dt.date)[f'Cycle Time_Total Batch'].mean().cumsum()
-        fig.add_trace(
-            go.Scatter(
-                x=shift_average.index,
-                y=shift_average.values,
-                mode='lines',
-                name=f'Average {shift}',
-                line=dict(dash='dash')
+        shift_average = shift_df.groupby(shift_df['Datetime'].dt.hour).mean()['Cycle Time_Total Batch']
+        for hour, avg_value in shift_average.items():
+            fig.add_shape(
+                type='line',
+                x0=hour,
+                y0=avg_value,
+                x1=hour + 1,
+                y1=avg_value,
+                line=dict(color='firebrick', width=2, dash='dash'),
+                name=f'Average {shift}'
             )
-        )
 
     for trace in fig.data:
         trace.text = [seconds_to_time(y) for y in trace.y]
 
     fig.update_layout(title='Stacked Line Chart of Cycle Time IDs 1 to 7 with Average Lines',
-                    xaxis_title='Datetime',
+                    xaxis_title='Hour of Day',
                     yaxis_title='Cumulative Cycle Time',
                     hovermode='x',
                     template='plotly_dark',
@@ -118,15 +119,6 @@ def main():
             end_date = st.sidebar.date_input("End Date", min_value=min_date, max_value=max_date, value=max_date)
 
             filtered_df = df[(df['Datetime'] >= pd.Timestamp(start_date)) & (df['Datetime'] <= pd.Timestamp(end_date))]
-
-            # Shift filter
-            shifts = filtered_df['RECORD_Shift'].unique().tolist()
-            selected_shift = st.sidebar.selectbox("Select Shift", ['All'] + shifts)
-
-            if selected_shift != 'All':
-                filtered_df = filtered_df[filtered_df['RECORD_Shift'] == selected_shift]
-            
-            st.write(filtered_df)
 
             plot_data(filtered_df)
     st.sidebar.write("""This Web-App is designed to facilitate monitoring of Maggi Mixing Cycle Count Report""")
