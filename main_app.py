@@ -98,6 +98,7 @@ def plot_data(df):
     st.plotly_chart(fig)
 
 
+
 def main():
     st.title("Cycle Time Analysis")
 
