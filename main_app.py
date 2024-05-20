@@ -101,7 +101,8 @@ def plot_data(df):
                 x=df['Datetime'],
                 y=df['Average'],
                 mode='lines',
-                name=f'Average Line'
+                name=f'Average Line',
+                line=dict(width=4)
             )
         )
 
