@@ -106,7 +106,10 @@ def plot_data(df):
                 hovertemplate='Datetime: %{x}<br>Average: %{text}'
             )
         )
-
+    
+    for trace in fig.data:
+        trace.text = [seconds_to_time(y) for y in trace.y]
+    
     fig.update_layout(title='Stacked Line Chart of Cycle Time IDs 1 to 7',
                     xaxis_title='Datetime',
                     yaxis_title='Cumulative Cycle Time',
