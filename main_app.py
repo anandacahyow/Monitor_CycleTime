@@ -4,10 +4,6 @@ import plotly.graph_objs as go
 from datetime import datetime, timedelta
 import numpy as np
 import math
-from PIL import Image
-
-img = Image.open('Nestle_Logo.png')
-st.set_page_config(page_title="Maggi Cycle Count", page_icon=img,layout="wide")
 
 def seconds_to_time(seconds):
     try:
@@ -71,10 +67,25 @@ def plot_data(df):
             )
         )
 
+    # Calculate and plot average lines for each RECORD_Shift
+    shifts = df['RECORD_Shift'].unique()
+    for shift in shifts:
+        shift_df = df[df['RECORD_Shift'] == shift]
+        shift_average = shift_df.groupby(shift_df['Datetime'].dt.date).mean().cumsum()
+        fig.add_trace(
+            go.Scatter(
+                x=shift_average.index,
+                y=shift_average['Cycle Time_Total Batch'],
+                mode='lines',
+                name=f'Average {shift}',
+                line=dict(dash='dash')
+            )
+        )
+
     for trace in fig.data:
         trace.text = [seconds_to_time(y) for y in trace.y]
 
-    fig.update_layout(title='Stacked Line Chart of Cycle Time IDs 1 to 7',
+    fig.update_layout(title='Stacked Line Chart of Cycle Time IDs 1 to 7 with Average Lines',
                     xaxis_title='Datetime',
                     yaxis_title='Cumulative Cycle Time',
                     hovermode='x',
@@ -118,10 +129,8 @@ def main():
             st.write(filtered_df)
 
             plot_data(filtered_df)
-    st.sidebar.image("Nestle_Signature.png")
-    st.sidebar.write("""<p style='font-size: 14px;'>This Web-App is designed to facilitate monitoring of Maggi Mixing Cycle Count Report""")
-    st.sidebar.write("""<p style='font-size: 13px;'>For any inquiries, error handling, or assistance, please feel free to reach us through Email: <br>
-        <a href="mailto:Ananda.Cahyo@id.nestle.com">Ananda.Cahyo@id.nestle.com <br></p>""", unsafe_allow_html=True)
+    st.sidebar.write("""This Web-App is designed to facilitate monitoring of Maggi Mixing Cycle Count Report""")
+    st.sidebar.write("""For any inquiries, error handling, or assistance, please feel free to reach us through Email: Ananda.Cahyo@id.nestle.com""")
 
 if __name__ == "__main__":
     main()
