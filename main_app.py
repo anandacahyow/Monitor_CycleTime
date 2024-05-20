@@ -81,7 +81,7 @@ def plot_data(df):
                     template='plotly_dark',
                     width = 1250,
                     height = 800)
-    fig.update_traces(mode='markers')
+    #fig.update_traces(mode='markers')
 
     st.plotly_chart(fig)
 
