@@ -44,34 +44,36 @@ def load_data(file):
         for i in range(1, len(df)):
             if df.loc[i, 'Datetime'] < df.loc[i - 1, 'Datetime']:
                 df.loc[i, 'Datetime'] += timedelta(days=1)
-        
-        averages = []
-        current_shift = None
-        shift_data = []
-        for index, row in df.iterrows():
-            if row['RECORD_Shift'] != current_shift:
-                if current_shift is not None:
-                    # Calculate average for the previous shift
-                    avg = sum(shift_data) / len(shift_data)
-                    averages.extend([avg] * len(shift_data))
-                current_shift = row['RECORD_Shift']
-                shift_data = [row['Cycle Time_ID 1']]
-            else:
-                shift_data.append(row['Cycle Time_ID 1'])
-
-        # Calculate average for the last shift
-        if shift_data:
-            avg = sum(shift_data) / len(shift_data)
-            averages.extend([avg] * len(shift_data))
-
-        # Add 'Average' column to DataFrame
-        df['Average'] = averages
-
-        df.drop(columns=['RECORD_Date', 'RECORD_Time'], inplace=True)
         return df
     except Exception as e:
         st.error(f"Error: {e}")
         return None
+
+def filtered_data(df, avg_data):
+    averages = []
+    current_shift = None
+    shift_data = []
+    for index, row in df.iterrows():
+        if row['RECORD_Shift'] != current_shift:
+            if current_shift is not None:
+                # Calculate average for the previous shift
+                avg = sum(shift_data) / len(shift_data)
+                averages.extend([avg] * len(shift_data))
+            current_shift = row['RECORD_Shift']
+            shift_data = [row['Cycle Time_ID 1']]
+        else:
+            shift_data.append(row['Cycle Time_ID 1'])
+
+    # Calculate average for the last shift
+    if shift_data:
+        avg = sum(shift_data) / len(shift_data)
+        averages.extend([avg] * len(shift_data))
+
+    # Add 'Average' column to DataFrame
+    df['Average'] = averages
+
+    df.drop(columns=['RECORD_Date', 'RECORD_Time'], inplace=True)
+    return df
 
 def plot_data(df):
     fig = go.Figure()
@@ -129,6 +131,10 @@ def main():
 
     if uploaded_file is not None:
         df = load_data(uploaded_file)
+
+        cycle_time_cols = sorted([col for col in df.columns if col.startswith('Cycle Time_ID')])
+        selected_data = st.selectbox("Select Data", cycle_time_cols)
+        df = filtered_data(df,selected_data, index=cycle_time_cols.index(cycle_time_cols[0])))
 
         if df is not None:
             # Set default date value to minimum date in the dataset
