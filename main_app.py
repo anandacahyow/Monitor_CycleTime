@@ -103,7 +103,7 @@ def plot_data(df):
                 mode='lines',
                 name=f'Average Line',
                 line=dict(width=4, color = 'red'),
-                hovertemplate='Datetime: %{x}<br>Average: %{y}'
+                hovertemplate='Datetime: %{x}<br>Average: %{text}'
             )
         )
 
