@@ -60,9 +60,16 @@ def plot_data(df):
         df[f'Cycle Time_ID {i}'] = pd.to_numeric(df[f'Cycle Time_ID {i}'], errors='coerce')
         
         cumulative_sum = [a + b for a, b in zip(cumulative_sum, df[f'Cycle Time_ID {i}'])]
-        fig.add_trace(go.Scatter(x=df['Datetime'], y=cumulative_sum, mode='lines', 
-                                name=f'Cycle Time {i}', stackgroup='one',
-                                hovertemplate='Datetime: %{x}<br>Duration: %{text}'))
+        fig.add_trace(
+            go.Scatter(
+                x=df['Datetime'],
+                y=cumulative_sum,
+                mode='lines',
+                name=f'Cycle Time {i}',
+                stackgroup='one',
+                hovertemplate='Datetime: %{x}<br>Duration: %{text}'
+            )
+        )
 
     for trace in fig.data:
         trace.text = [seconds_to_time(y) for y in trace.y]
