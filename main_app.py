@@ -134,7 +134,7 @@ def main():
 
         cycle_time_cols = sorted([col for col in df.columns if col.startswith('Cycle Time_ID')])
         selected_data = st.selectbox("Select Data", cycle_time_cols)
-        df = filtered_data(df,selected_data, index=cycle_time_cols.index(cycle_time_cols[0])))
+        df = filtered_data(df,selected_data, index=cycle_time_cols.index(cycle_time_cols[0]))
 
         if df is not None:
             # Set default date value to minimum date in the dataset
