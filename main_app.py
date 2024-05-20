@@ -71,7 +71,7 @@ def plot_data(df):
     shifts = df['RECORD_Shift'].unique()
     shift_avg_values = [0] * len(df)
     prev_shift = None
-    for i, (shift, _) in enumerate(df['RECORD_Shift'].iteritems()):
+    for i, shift in enumerate(df['RECORD_Shift'].values):
         if shift != prev_shift:  # Shift change encountered
             if prev_shift is not None:
                 shift_avg = np.mean(shift_avg_values[:i]) if i > 0 else 0
@@ -85,7 +85,7 @@ def plot_data(df):
                     )
                 )
             prev_shift = shift
-        shift_avg_values[i] = df.loc[shift, 'Cycle Time_Total Batch']
+        shift_avg_values[i] = df.loc[df.index[i], 'Cycle Time_Total Batch']
     
     # Plot the average line for the last shift
     if prev_shift is not None:
@@ -113,8 +113,6 @@ def plot_data(df):
     # fig.update_traces(mode='markers')
 
     st.plotly_chart(fig)
-
-
 
 
 def main():
