@@ -71,11 +71,11 @@ def plot_data(df):
     shifts = df['RECORD_Shift'].unique()
     for shift in shifts:
         shift_df = df[df['RECORD_Shift'] == shift]
-        shift_average = shift_df.groupby(shift_df['Datetime'].dt.date).mean().cumsum()
+        shift_average = shift_df.groupby(shift_df['Datetime'].dt.date)[f'Cycle Time_Total Batch'].mean().cumsum()
         fig.add_trace(
             go.Scatter(
                 x=shift_average.index,
-                y=shift_average['Cycle Time_Total Batch'],
+                y=shift_average.values,
                 mode='lines',
                 name=f'Average {shift}',
                 line=dict(dash='dash')
