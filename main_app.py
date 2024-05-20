@@ -102,8 +102,7 @@ def plot_data(df):
                 y=df['Average'],
                 mode='lines',
                 name=f'Average Line',
-                line=dict(width=4),
-                color = 'red'
+                line=dict(width=4, color = 'red')
             )
         )
 
